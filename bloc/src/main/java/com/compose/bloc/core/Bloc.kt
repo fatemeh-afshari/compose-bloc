@@ -1,5 +1,6 @@
 package com.compose.bloc.core
 
+import com.compose.bloc.compose.LoggingBlocObserver
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.filterIsInstance
@@ -141,6 +142,6 @@ abstract class Bloc<Event, State>(initial: State) :
     protected open fun Flow<Event>.transformEvents() = this
 
     companion object {
-        var observer: BlocObserver = SilentBlocObserver()
+        var observer: BlocObserver = LoggingBlocObserver()
     }
 }
