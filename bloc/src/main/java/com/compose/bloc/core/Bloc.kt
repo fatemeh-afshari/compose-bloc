@@ -3,7 +3,9 @@ package com.compose.bloc.core
 import com.compose.bloc.compose.LoggingBlocObserver
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.zip
@@ -18,7 +20,6 @@ import kotlinx.coroutines.launch
  * @param State The type of state this emits
  * @see Cubit
  */
-@Suppress("LeakingThis")
 abstract class Bloc<Event, State>(initial: State) :
     BlocBase<State>(initial) {
     protected val eventFlow = MutableSharedFlow<Event>()
@@ -27,20 +28,25 @@ abstract class Bloc<Event, State>(initial: State) :
         eventFlow
             .onEach { onEvent(it) }
             .zip(mutableChangeFlow) { event, change ->
-                Transition(change.state, event, change.newState)
+                change?.let {
+                    Transition(change.currentState, event, change.nextState)
+                }
             }
+            .filterNotNull()
             .onEach { onTransition(it) }
-            .launchIn(blocScope)
+            .launchIn(
+                scope
+            )
     }
 
     @PublishedApi
     internal val emitter = object : Emitter<State> {
         override suspend fun emit(state: State) {
-            mutableChangeFlow.emit(Change(this@Bloc.state, state))
+            mutableChangeFlow.value = Change(this@Bloc.currentState, state)
         }
 
         override suspend fun emitEach(states: Flow<State>) {
-            states.onEach { emit(it) }.launchIn(blocScope)
+            states.onEach { emit(it) }.launchIn(scope)
         }
     }
 
@@ -72,14 +78,14 @@ abstract class Bloc<Event, State>(initial: State) :
             .transformEvents()
             .filterIsInstance<E>()
             .onEach { emitter.mapEventToState(it) }
-            .launchIn(blocScope)
+            .launchIn(scope)
     }
 
     /**
      * Notifies the [Bloc] of a new [event], which triggers the event handler registered by [on].
      */
     fun add(event: Event) {
-        blocScope.launch {
+        scope.launch {
             eventFlow.emit(event)
         }
     }

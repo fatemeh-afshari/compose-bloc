@@ -1,7 +1,17 @@
 package com.compose.bloc.core
 
 /**
- * Represents a transition from one [State] to a new [State] in a [Bloc],
- * as a result of an [Event].
+ * A [Transition] is the change from one state to another.
+ * Consists of the [currentState], an [event], and the [nextState].
+ * The [Event] which triggered the current [Transition].
  */
-data class Transition<Event, State>(val state: State, val event: Event, val newState: State)
+data class Transition<Event, State>(
+    val currentState: State,
+    val event: Event,
+    val nextState: State,
+) {
+    override fun toString(): String {
+        return "Transition {currentState: $currentState, event: $event, nextState: $nextState}"
+    }
+
+}

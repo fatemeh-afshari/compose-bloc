@@ -32,7 +32,7 @@ fun <B : BlocBase<State>, State, T> BlocSelector(
     selector: (State) -> T,
     content: @Composable (T) -> Unit,
 ) {
-    val state by produceState(initialValue = selector(bloc.state)) {
+    val state by produceState(initialValue = selector(bloc.currentState)) {
         bloc.stateFlow.map { selector(it) }.collect { value = it }
     }
 

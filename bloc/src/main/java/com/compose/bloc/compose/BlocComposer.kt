@@ -46,7 +46,7 @@ fun <B : BlocBase<State>, State> BlocComposer(
 ) {
     val state by bloc.stateFlow
         .transformStates()
-        .collectAsState(initial = bloc.state)
+        .collectAsState(initial = bloc.currentState)
 
     content(state)
 }

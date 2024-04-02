@@ -25,10 +25,10 @@ import kotlinx.coroutines.flow.onEach
 abstract class Cubit<State>(initial: State) :
     BlocBase<State>(initial), Emitter<State> {
     override suspend fun emit(state: State) {
-        mutableChangeFlow.emit(Change(this.state, state))
+        mutableChangeFlow.emit(Change(this.currentState, state))
     }
 
     override suspend fun emitEach(states: Flow<State>) {
-        states.onEach { emit(it) }.launchIn(blocScope)
+        states.onEach { emit(it) }.launchIn(scope)
     }
 }

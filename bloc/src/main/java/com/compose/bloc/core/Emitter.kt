@@ -12,7 +12,7 @@ interface Emitter<State> {
     suspend fun emit(state: State)
 
     /**
-     * [emit] each [State] which is emitted by the [states] [Flow].
+     * Subscribes to the provided [states] and emit the states
      */
     suspend fun emitEach(states: Flow<State>)
 }

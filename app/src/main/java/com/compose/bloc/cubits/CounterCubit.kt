@@ -5,6 +5,7 @@ import kotlinx.coroutines.launch
 
 class CounterCubit : Cubit<Int>(0) {
     fun increment() {
-        blocScope.launch { emit(state + 1) }
+        scope.launch { emit(currentState + 1) }
     }
+
 }

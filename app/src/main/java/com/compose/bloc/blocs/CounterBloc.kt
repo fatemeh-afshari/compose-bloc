@@ -12,8 +12,8 @@ class CounterBloc(private val initial: Int) : Bloc<CounterEvent, Int>(initial), 
     init {
         on<CounterEvent> { event ->
             when (event) {
-                CounterEvent.Increment -> emit(state + 1)
-                CounterEvent.Decrement -> emit(state - 1)
+                CounterEvent.Increment -> emit(currentState + 1)
+                CounterEvent.Decrement -> emit(currentState - 1)
             }
         }
     }
